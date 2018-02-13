@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+  <meta charset="utf-8">
+  <link href="style.css" rel="stylesheet">
+  <title>JS</title>
+</head>
+    
+<body>
+  <div id="task">
+    <div id="initialData">
+      <h3>Working combinations:</h3>
+      <div id="combs"></div>
+    </div>
+
+    <div id="codeDist"></div>
+
+    <div id="rate">
+      <h3>Rate of incorrect transitions:</h3>
+      <ul id="ul"></ul>
+    </div>
+  </div>
+  
+  <script>
+    'use strict';
+    
+    let combArr = ['001', '010', '011', '100'];
+    let Npid = [];
+    let incTrans = 0, perc = 0;
+    generateTable(codeDist, combArr.length + 1, combArr.length + 1);
+    let codeDistTable = document.getElementById('codeDist').firstElementChild;
+    
+    combArr.forEach((code, i) => combs.insertAdjacentHTML('beforeend', `V${i + 1} = ${code} <br>`));
+    
+//      --------------codeDistance Table-----------------
+    for (let i = 0; i < combArr.length; i++) {  
+      for (let j = 0; j < combArr.length; j++) {
+        let tmpSum = '';
+        
+        for (let k = 0; k < combArr[j].length; k++) {         
+          let XoR = combArr[i][k] ^ combArr[j][k];
+          tmpSum += XoR;
+        }
+        
+        tmpSum = Array.from(tmpSum).filter(bin => bin != 0); 
+        
+        codeDistTable.rows[i + 1].cells[j + 1].textContent = tmpSum.length; 
+      }
+    }
+    
+//    --------------count of working combinations-----------------
+    for (let i = 0; i <= combArr[0].length + 1; i++) {
+      Npid.push(0);
+    }
+    
+    for (let i = 1; i < codeDistTable.rows.length; i++) {
+      for (let j = 1; j < codeDistTable.rows[i].cells.length; j++) {
+        let d = +codeDistTable.rows[i].cells[j].textContent;
+        
+        Npid[d]++; 
+      }
+    }
+//    --------------rate of incorrect transitions--------------
+    for (let d = 0; d < Npid.length; d++) {
+      let comb = fact(combArr[0].length) / ( fact(d) * fact(combArr[0].length - d) );
+      incTrans = 1 / combArr.length * Npid[d] / (comb); 
+      perc = (1 - incTrans) * 100; 
+      
+      let li = document.createElement('li');
+      li.textContent = `Finds ${Math.round(perc)} % of ${d}-time mistakes`;
+      ul.append(li);
+    }
+    
+    function generateTable(elem, rowsCount, colsCount) {
+      let table = '<table><caption><h3>Code distance table</h3></caption>';
+      
+      for (let i = 0; i < rowsCount; i++) {
+        table += '<tr>';
+
+        for (let j = 0; j < colsCount; j++) {
+          if (i == 0) {
+            table += `<th>V${j}</th>`;
+          } else  {
+            if (j == 0) {
+              table += `<td>V${i}</td>`;
+            } else {
+              table += `<td></td>`;
+            }
+          }
+        }
+        
+        table += '</tr>';
+      }
+
+      table += '</table>';
+      elem.innerHTML = table;
+    }
+
+    function fact(n) {
+      let f = 1;
+      
+      for (let i = n; i > 0; i--) {
+        f *= i;
+      }
+      
+      return f;
+    }
+    
+  </script>
+ 
+</body>
+</html>

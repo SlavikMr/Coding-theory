@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link href="style.css" rel="stylesheet">
+  <title>JS</title>
+</head>
+
+<body>
+
+  <div id="task">
+    <label>Count of combinations: <input id="combs" type="text" value="16" readonly></label><br>
+
+    <label>Rate of mistake: <input id="mistake" type="text" value="2" readonly></label>
+
+    <div>Rows(k): <span id="rows"></span></div>
+    <div>d<sub>min</sub>: <span id="dmin"></span></div>
+    <div>Cols(r): <span id="cols"></span></div>
+    
+    <div id="checkingMatrix"></div>
+    <div id="creatingMatrix"></div>
+    <div id="codeDist"></div>
+
+    <div>Code combinations with two rate mistakes: <u><span id="propElems"></span></u></div>
+  </div>
+
+  <script>
+    'use strict';
+  
+    let rows = document.getElementById('rows');
+    let cols = document.getElementById('cols');
+    let codeCombins = [];
+    
+    showSolutions();
+
+    function showSolutions() {
+      calcRowsCount();
+      calcDmin();
+      calcColsCount();
+      generateTable(checkingMatrix, rows.innerHTML, cols.innerHTML);
+      fillCheckingMatrix();
+      generateTable(creatingMatrix, rows.innerHTML, +cols.innerHTML + +rows.innerHTML);
+      fillCreatingMatrixWithInform();
+      fillCreatingMatrixWithCheck();
+      defineCodeCombins();
+      generateTable(codeDist, combs.value, combs.value);
+      fillCodeDistTable();
+      findMistakes();
+    }
+
+    function calcRowsCount() {
+      let combs = document.getElementById('combs');
+      rows.innerHTML = log(2, combs.value); 
+    }
+
+    function calcDmin() {
+      let mistake = document.getElementById('mistake');
+
+      document.getElementById('dmin').innerHTML = 2 * mistake.value + 1;
+    }
+
+    function calcColsCount() {
+      let r = 0;
+
+      do {
+        r++;
+      } while (r != log(2, 4 + r + 1))
+
+      cols.innerHTML = r;
+    }
+
+    function generateTable(elem, rowsCount, colsCount) {
+      let table = '<table>';
+
+      for (let i = 0; i < rowsCount; i++) {
+        table += '<tr>';
+
+        for (let j = 0; j < colsCount; j++) {
+          table += '<td></td>';
+        }
+
+        table += '</tr>';
+      }
+
+      table += '</table>';
+      elem.innerHTML = table;
+    }
+
+    function fillCheckingMatrix() {
+      let matrix = document.querySelector('#checkingMatrix table');
+
+      for (let i = 0; i < matrix.rows.length; i++) {
+        for (let j = 0; j < matrix.rows[i].cells.length; j++) {
+          matrix.rows[i].cells[j].innerHTML = 1;
+
+          if (i == j) {
+            matrix.rows[i].cells[j].innerHTML = 0;
+          }
+        }
+      }
+    }
+
+    function fillCreatingMatrixWithInform() {
+      let matrix = document.querySelector('#creatingMatrix table');
+      let i = 0;
+      let rowLength = matrix.rows[i].cells.length - cols.innerHTML;
+      
+      while (i < matrix.rows.length) {
+        for (let j = 0; j < rowLength; j++) {
+          matrix.rows[i].cells[j].innerHTML = 0;
+
+          if (i == j) {
+            matrix.rows[i].cells[j].innerHTML = 1;
+          }
+        }
+        i++;
+      }
+    }
+
+    function fillCreatingMatrixWithCheck() {
+      let matrix = document.querySelector('#creatingMatrix table');
+      let startFrom = matrix.rows[0].cells.length - rows.innerHTML + 1;
+
+      for (let i = 0; i < matrix.rows.length; i++) {
+        for (let j = startFrom; j < matrix.rows[i].cells.length; j++) {
+          matrix.rows[i].cells[j].innerHTML = 1;
+
+          if (j - i == 4) {
+            matrix.rows[i].cells[j].innerHTML = 0;
+          }
+        }
+      }
+    }
+
+    function defineCodeCombins() {
+      let matrix = document.querySelector('#creatingMatrix table');
+      let creatingMatrix = [];
+      codeCombins.push('0000000');
+//      2-5
+      for (let row of matrix.rows) {
+        codeCombins.push(Array.from(row.cells).map(td => td.innerHTML).join(''));
+        creatingMatrix.push(Array.from(row.cells).map(td => td.innerHTML).join(''));
+      }
+//      6-11
+      for (let i = 0; i < creatingMatrix.length; i++) {
+        for (let j = i + 1; j < creatingMatrix.length; j++) {
+          let tmp = '';
+
+          for (let k = 0; k < creatingMatrix[j].length; k++) {
+            let XoR = creatingMatrix[i][k] ^ creatingMatrix[j][k];
+            tmp += XoR;
+          }
+
+          codeCombins.push(tmp);
+        }
+      }
+//      12-15
+      for (let i = 0; i < creatingMatrix.length; i++) {
+        for (let j = i + 1; j < creatingMatrix.length; j++) {
+          for (let r = j + 1; r < creatingMatrix.length; r++) {
+            let tmp = '';
+
+            for (let k = 0; k < creatingMatrix[i].length; k++) {
+              let XoR = creatingMatrix[i][k] ^ creatingMatrix[j][k] ^ creatingMatrix[r][k];
+              tmp += XoR;
+            }
+
+            codeCombins.push(tmp);
+          }
+        }
+      }
+//      16
+      for (let i = 0; i < 1; i++) {
+        for (let j = 1; j < 2; j++) {
+          for (let r = 2; r < 3; r++) {
+            for (let m = 3; m < 4; m++) {
+              let tmp = '';
+
+              for (let k = 0; k < creatingMatrix[i].length; k++) {
+                let XoR = creatingMatrix[i][k] ^ creatingMatrix[j][k] ^ creatingMatrix[r][k] ^ creatingMatrix[m][k];
+                tmp += XoR;
+              }
+
+              codeCombins.push(tmp);
+            }
+          }
+        }
+      }
+    }
+
+    function fillCodeDistTable() {
+      let matrix = document.querySelector('#codeDist table');
+
+      for (let i = 0; i < codeCombins.length; i++) {
+        for (let j = 0; j < codeCombins.length; j++) {
+          let tmp = '';
+
+          for (let k = 0; k < codeCombins[j].length; k++) {
+            let XoR = codeCombins[i][k] ^ codeCombins[j][k];
+            tmp += XoR;
+          }
+
+          let oneCount = Array.from(tmp).filter(bin => bin != 0);
+
+          matrix.rows[i].cells[j].innerHTML = oneCount.length;
+        }
+      }
+    }
+
+    function findMistakes() {
+      let matrix = document.querySelector('#codeDist table');
+      let dMin = +mistake.value + 1;
+
+      let propElemsPos = Array.from(matrix.rows[0].cells).map((td, i) => {
+        if (td.innerHTML == dMin) return `V${i + 1} `;
+      }).join('');
+
+      document.getElementById('propElems').innerHTML = propElemsPos;
+    }
+
+    function log(x, y) {
+      return Math.log(y) / Math.log(x);
+    }
+
+  </script>
+
+</body>
+
+</html>

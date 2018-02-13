@@ -1,0 +1,42 @@
+body {
+  background: #7f8c8d;
+  color: white;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#codeSatellitesTable {
+  margin: 20px auto;
+  width: 700px;
+}
+
+table {
+  color: black;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+/*th {
+  background: #fadcdc;
+  border: 2px solid black;
+  height: 35px;
+  font: bold 20px serif;
+}*/
+
+td {
+  background: white;
+  border: 2px solid black;
+  text-align: center;
+  height: 25px;
+  font: 20px serif;
+  padding: 0 5px;
+}
+
+tr:first-child td {
+  font-weight: bold;
+  height: 33px;
+  padding: 0 8px;
+}

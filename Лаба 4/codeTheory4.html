@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+  <meta charset="utf-8">
+  <link href="style.css" rel="stylesheet">
+  <title>JS</title>
+</head>
+    
+<body>
+  
+   <div id="codeSatellitesTable"></div>
+  
+  <script>
+    'use strict';
+    
+    let initArr = ['0000000', '1000011', '0100101', '0010110', '1001100', '0101010', '0011001', '1110000'];
+    let codeLength = initArr[0].length;
+    let allPosCombs = [], codeSatellites = [];
+    let mistake = 2;
+    let codeSatellitesTable = document.getElementById("codeSatellitesTable");
+    
+    generateCombinations();
+    findSatellites();
+    generateTable(codeSatellitesTable, codeSatellites.length / initArr.length + 1, initArr.length);
+    fillcodeSatellitesTable();
+    
+    function generateCombinations() {
+      for (let i = 0; i < Math.pow(2, codeLength); i++) {
+        let binCodeLength = i.toString(2).length;
+        let binCode = i.toString(2);
+
+        if (binCodeLength < codeLength) {
+          let zeroCount =  codeLength - binCodeLength;
+          let correctBinCode = '';
+
+          for (let i = 0; i < zeroCount; i++) {
+            correctBinCode += 0;
+          }
+
+          correctBinCode += binCode;
+
+          allPosCombs.push(correctBinCode);
+        } else {
+          allPosCombs.push(binCode);
+        }
+      }
+    }
+    
+    function findSatellites() {
+      for (let i = 0; i < initArr.length; i++) {
+        for (let j = 0; j < allPosCombs.length; j++) {
+          let tmpSum = '';
+
+          for (let k = 0; k < allPosCombs[j].length; k++) {         
+            let XoR = initArr[i][k] ^ allPosCombs[j][k];
+            tmpSum += XoR;
+          }
+
+          tmpSum = Array.from(tmpSum).filter(bin => bin != 0);
+          
+          if (tmpSum.length == mistake) {
+            codeSatellites.push(allPosCombs[j]);
+          }
+        }
+      }
+    }
+   
+    function generateTable(elem, rowsCount, colsCount) {
+      let table = '<table><caption><h1>Satellite codes table</h1></caption>';
+      
+      for (let i = 0; i < rowsCount; i++) {
+        table += '<tr>';
+        
+        for (let j = 0; j < colsCount; j++) {
+          table += '<td></td>';
+        }
+        
+        table += '</tr>';
+      }
+       
+      table += '</table>';
+      elem.innerHTML = table;
+    }
+    
+    function fillcodeSatellitesTable() {
+      let table = document.querySelector('#codeSatellitesTable table');
+      let tableRows = codeSatellites.length / initArr.length;
+      let k = 0;
+      
+      Array.from(table.rows[0].cells).forEach((td, i) => td.innerHTML = initArr[i]);
+      
+      for (let i = 0; i < initArr.length; i++) {
+        for (let j = 1; j <= tableRows; j++) {
+          table.rows[j].cells[i].innerHTML = codeSatellites[k];
+          k++;
+        }
+      }
+    }
+    
+  </script>
+ 
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+  <meta charset = "utf-8">
+  <link href = "style.css" rel = "stylesheet">
+  <title>JS</title>
+</head>
+    
+<body>
+
+  <div>Матриця сумісних ймовірностей:</div>
+  
+  <script>
+    'use strict';
+    
+    let matrix = [
+      [0.32, 0.02, 0.04, 0], 
+      [0.07, 0.05, 0.09, 0.01], 
+      [0, 0.01, 0.05, 0.05],
+      [0.07, 0.01, 0.16, 0.05]
+    ];
+    let rowRes = [], colRes = [], bSum = 0, aSum = 0;
+    let matrix_a_b = [[], [], [], []], matrix_b_a = [[], [], [], []];
+    let rSum = 0, cSum = 0, tmp = 0;
+    let entrA = 0, entrB = 0, entrA_b = [],
+        entrB_a = [], entrA_B = 0, entrB_A = 0, unA_B = 0, infAmount = 0;
+    
+    matrix.forEach( (row, i) => {
+      document.body.insertAdjacentHTML('beforeend', `<span style="margin-left: 80px"></span> ${row} <br>`);
+    });
+    
+    matrix.forEach( (row, i) => {
+      matrix[i].forEach( (rowElem, j) => {
+        rSum += rowElem;
+        cSum += matrix[j][i];
+      })
+      
+      rowRes.push(rSum.toFixed(2));
+      colRes.push(cSum.toFixed(2));
+      rSum = 0;
+      cSum = 0;
+    });
+    
+    document.body.insertAdjacentHTML('beforeend',
+                                     `Сума по рядках: ${rowRes} <br> 
+                                      Сума по стовпцях: ${colRes} <br>`);
+    
+//    ----------------H(A)-----------------
+    rowRes.forEach(elem => {
+      entrA += -elem * log(2, elem);
+    });
+//    ----------------H(B)-----------------
+    colRes.forEach(elem => {
+      entrB += -elem * log(2, elem);
+    });
+    
+    document.body.insertAdjacentHTML('beforeend',
+                                     `Безумовна енторпія(А): ${entrA.toFixed(3)} <br> 
+                                      Безумовна енторпія(В): ${entrB.toFixed(3)} <br>`);
+    
+//    ----------------Matrix(a/b)-----------------
+    document.body.insertAdjacentHTML('beforeend', `Матриця a/b: <br>`);
+    
+    matrix.forEach( (row, i) => {
+      matrix[i].forEach( (rowElem, j) => {
+        tmp = rowElem / colRes[j];
+        matrix_a_b[i][j] = tmp.toFixed(2);
+      })
+      
+      document.body.insertAdjacentHTML('beforeend', 
+                                       `<span style="margin-left: 80px"></span> ${matrix_a_b[i]} <br> `);      
+    });
+
+//    ----------------Matrix(b/a)-----------------   
+    document.body.insertAdjacentHTML('beforeend', `Матриця b/a: <br>`);
+    
+    matrix.forEach( (row, i) => {
+      matrix[i].forEach( (rowElem, j) => {
+        tmp = rowElem / rowRes[i];
+        matrix_b_a[i][j] = tmp.toFixed(2);
+      })
+      
+      document.body.insertAdjacentHTML('beforeend', 
+                                       `<span style="margin-left: 80px"></span> ${matrix_b_a[i]} <br>`);
+    });
+    
+//    ----------------H(A/b)-----------------
+    matrix_a_b.forEach( (row, i) => {
+      matrix_a_b[i].forEach( (rowElem, j) => {
+        if (matrix_a_b[j][i] == 0) return;
+
+        bSum += -matrix_a_b[j][i] * log(2, matrix_a_b[j][i]);
+      })
+      
+      entrA_b.push(bSum.toFixed(2));
+      bSum = 0;
+    });
+    
+    document.body.insertAdjacentHTML('beforeend', 
+                                     `Часткова умовна ентропія(A/b):  ${entrA_b} <br>`);
+    
+//    ----------------H(B/a)-----------------    
+    matrix_b_a.forEach( (row, i) => {
+      matrix_b_a[i].forEach( (rowElem, j) => {
+        if (rowElem == 0) return;
+
+        aSum += -rowElem * log(2, rowElem);
+      })
+      
+      entrB_a.push(aSum.toFixed(2));
+      aSum = 0;
+    });
+    
+    document.body.insertAdjacentHTML('beforeend', 
+                                     `Часткова умовна ентропія(B/a):  ${entrB_a} <br>`);
+    
+//    ----------------H(A/B, B/A)-----------------    
+    colRes.forEach( (elem, i) => {
+      entrA_B += colRes[i] * entrA_b[i];
+      entrB_A += rowRes[i] * entrB_a[i];
+    });
+    
+    document.body.insertAdjacentHTML('beforeend', 
+                                     `Загальна умовна ентропія(A/B): ${entrA_B.toFixed(3)} <br> 
+                                      Загальна умовна ентропія(B/A): ${entrB_A.toFixed(3)} <br>`);
+    
+//    ----------------Union and infAmount-----------------      
+    unA_B = entrA + entrB_A;
+    infAmount = entrA - entrA_B;
+    
+    document.body.insertAdjacentHTML('beforeend', 
+                                     `Ентропія об'єднання двох джерел: ${unA_B.toFixed(3)} <br>
+                                      Кількість інформації на одне повідомлення: ${infAmount.toFixed(3)}`);
+    
+    function log(x, y) {
+      return Math.log(y) / Math.log(x);
+    }
+    
+  </script>
+
+</body>
+</html>

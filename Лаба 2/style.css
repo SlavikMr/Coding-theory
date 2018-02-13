@@ -1,0 +1,51 @@
+body {
+  background: #34495e;
+  margin-left: 50px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#task {
+  font:  20px MS Sans Serif;
+  margin-top: 20px;
+}
+
+#initialData {
+  margin-bottom: 10px;
+}
+
+#combs {
+  padding-left: 20px;
+}
+
+#codeDist table {
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  font: bold 23px serif;
+}
+
+#codeDist table th {
+  background: #fadcdc;
+  border: 2px solid black;
+}
+
+#codeDist table td:first-child {
+  background: #fadcdc;
+}
+
+#codeDist table td {
+  background: white;
+  border: 2px solid black;
+  text-align: center;
+}
+
+#codeDist table th, td {
+  padding: 4px 13px;
+}
+
+#rate ul {
+  list-style-position: inside;
+}
